@@ -1,0 +1,444 @@
+-- =====================================================
+-- INVENTORY MANAGEMENT SYSTEM
+-- DBMS MINI PROJECT
+-- =====================================================
+
+CREATE DATABASE inventory_management;
+USE inventory_management;
+
+
+-- =====================================================
+-- 1. SUPPLIER TABLE
+-- =====================================================
+
+CREATE TABLE supplier (
+    sup_id INT PRIMARY KEY AUTO_INCREMENT,
+    sup_name VARCHAR(100) NOT NULL,
+    sup_email VARCHAR(100),
+    sup_phone VARCHAR(15),
+    sup_address VARCHAR(200)
+);
+
+
+-- =====================================================
+-- 2. PRODUCT TABLE
+-- =====================================================
+
+CREATE TABLE product (
+    prod_id INT PRIMARY KEY AUTO_INCREMENT,
+    prod_name VARCHAR(100) NOT NULL,
+    category VARCHAR(50),
+    unit_price DECIMAL(10,2),
+    reorder_level INT,
+    sup_id INT,
+
+    FOREIGN KEY (sup_id)
+        REFERENCES supplier(sup_id)
+);
+
+
+-- =====================================================
+-- 3. WAREHOUSE TABLE
+-- =====================================================
+
+CREATE TABLE warehouse (
+    warehouse_id INT PRIMARY KEY AUTO_INCREMENT,
+    warehouse_name VARCHAR(100) NOT NULL,
+    location VARCHAR(100),
+    capacity INT
+);
+
+
+-- =====================================================
+-- 4. INVENTORY TABLE
+-- =====================================================
+
+CREATE TABLE inventory (
+    inventory_id INT PRIMARY KEY AUTO_INCREMENT,
+    prod_id INT,
+    warehouse_id INT,
+    quantity_on_hand INT,
+    reorder_level INT,
+    last_updated DATE,
+
+    FOREIGN KEY (prod_id)
+        REFERENCES product(prod_id),
+
+    FOREIGN KEY (warehouse_id)
+        REFERENCES warehouse(warehouse_id)
+);
+
+
+-- =====================================================
+-- 5. CUSTOMER TABLE
+-- =====================================================
+
+CREATE TABLE customer (
+    cust_id INT PRIMARY KEY AUTO_INCREMENT,
+    cust_name VARCHAR(100) NOT NULL,
+    cust_email VARCHAR(100),
+    cust_phone VARCHAR(15),
+    cust_address VARCHAR(200)
+);
+
+
+-- =====================================================
+-- 6. PURCHASE ORDER TABLE
+-- =====================================================
+
+CREATE TABLE purchase_order (
+    po_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_date DATE,
+    total_amount DECIMAL(12,2),
+    status VARCHAR(30),
+    supplier_id INT,
+
+    FOREIGN KEY (supplier_id)
+        REFERENCES supplier(sup_id)
+);
+
+
+-- =====================================================
+-- 7. SALES ORDER TABLE
+-- =====================================================
+
+CREATE TABLE sales_order (
+    so_id INT PRIMARY KEY AUTO_INCREMENT,
+    order_date DATE,
+    total_amount DECIMAL(12,2),
+    status VARCHAR(30),
+    customer_id INT,
+
+    FOREIGN KEY (customer_id)
+        REFERENCES customer(cust_id)
+);
+
+
+-- =====================================================
+-- 8. ORDER ITEM TABLE
+-- =====================================================
+
+CREATE TABLE order_item (
+    order_item_id INT PRIMARY KEY AUTO_INCREMENT,
+    po_id INT,
+    so_id INT,
+    inventory_id INT,
+    product_id INT,
+    quantity INT,
+    unit_price DECIMAL(10,2),
+
+    FOREIGN KEY (po_id)
+        REFERENCES purchase_order(po_id),
+
+    FOREIGN KEY (so_id)
+        REFERENCES sales_order(so_id),
+
+    FOREIGN KEY (inventory_id)
+        REFERENCES inventory(inventory_id),
+
+    FOREIGN KEY (product_id)
+        REFERENCES product(prod_id)
+);
+
+
+-- =====================================================
+-- INSERT SUPPLIER DETAILS
+-- =====================================================
+
+INSERT INTO supplier
+(sup_name, sup_email, sup_phone, sup_address)
+VALUES
+('ABC Electronics', 'abc@gmail.com', '9876543210', 'Hyderabad'),
+('Global Traders', 'global@gmail.com', '9876501234', 'Bangalore'),
+('Tech Supplies', 'tech@gmail.com', '9988776655', 'Chennai'),
+('Prime Distributors', 'prime@gmail.com', '9123456780', 'Mumbai');
+
+
+-- =====================================================
+-- INSERT PRODUCT DETAILS
+-- =====================================================
+
+INSERT INTO product
+(prod_name, category, unit_price, reorder_level, sup_id)
+VALUES
+('Laptop', 'Electronics', 55000.00, 10, 1),
+('Keyboard', 'Accessories', 1200.00, 20, 1),
+('Mouse', 'Accessories', 700.00, 25, 2),
+('Monitor', 'Electronics', 15000.00, 10, 3),
+('Printer', 'Electronics', 18000.00, 5, 4),
+('USB Cable', 'Accessories', 300.00, 30, 2);
+
+
+-- =====================================================
+-- INSERT WAREHOUSE DETAILS
+-- =====================================================
+
+INSERT INTO warehouse
+(warehouse_name, location, capacity)
+VALUES
+('Main Warehouse', 'Hyderabad', 1000),
+('Central Warehouse', 'Bangalore', 800),
+('South Warehouse', 'Chennai', 600);
+
+
+-- =====================================================
+-- INSERT INVENTORY DETAILS
+-- =====================================================
+
+INSERT INTO inventory
+(prod_id, warehouse_id, quantity_on_hand, reorder_level, last_updated)
+VALUES
+(1, 1, 50, 10, '2026-09-01'),
+(2, 1, 100, 20, '2026-09-01'),
+(3, 1, 150, 25, '2026-09-02'),
+(4, 2, 40, 10, '2026-09-02'),
+(5, 2, 20, 5, '2026-09-03'),
+(6, 3, 200, 30, '2026-09-03');
+
+
+-- =====================================================
+-- INSERT CUSTOMER DETAILS
+-- =====================================================
+
+INSERT INTO customer
+(cust_name, cust_email, cust_phone, cust_address)
+VALUES
+('Rahul Kumar', 'rahul@gmail.com', '9000000001', 'Hyderabad'),
+('Priya Sharma', 'priya@gmail.com', '9000000002', 'Bangalore'),
+('Arjun Reddy', 'arjun@gmail.com', '9000000003', 'Chennai'),
+('Sneha Rao', 'sneha@gmail.com', '9000000004', 'Mumbai');
+
+
+-- =====================================================
+-- INSERT PURCHASE ORDERS
+-- =====================================================
+
+INSERT INTO purchase_order
+(order_date, total_amount, status, supplier_id)
+VALUES
+('2026-09-01', 150000.00, 'Completed', 1),
+('2026-09-02', 85000.00, 'Pending', 2),
+('2026-09-03', 120000.00, 'Completed', 3);
+
+
+-- =====================================================
+-- INSERT SALES ORDERS
+-- =====================================================
+
+INSERT INTO sales_order
+(order_date, total_amount, status, customer_id)
+VALUES
+('2026-09-04', 56200.00, 'Completed', 1),
+('2026-09-05', 15000.00, 'Pending', 2),
+('2026-09-06', 19000.00, 'Shipped', 3);
+
+
+-- =====================================================
+-- INSERT ORDER ITEMS
+-- =====================================================
+
+INSERT INTO order_item
+(po_id, so_id, inventory_id, product_id, quantity, unit_price)
+VALUES
+(1, 1, 1, 1, 1, 55000.00),
+(1, 1, 2, 2, 1, 1200.00),
+(2, 2, 4, 4, 1, 15000.00),
+(2, 3, 5, 5, 1, 18000.00),
+(3, 3, 3, 3, 2, 700.00);
+
+
+-- =====================================================
+-- BASIC QUERIES
+-- =====================================================
+
+-- 1. Show all suppliers
+SELECT * FROM supplier;
+
+
+-- 2. Show all products
+SELECT * FROM product;
+
+
+-- 3. Show all customers
+SELECT * FROM customer;
+
+
+-- 4. Show all warehouses
+SELECT * FROM warehouse;
+
+
+-- 5. Show complete inventory
+SELECT * FROM inventory;
+
+
+-- =====================================================
+-- PRODUCTS WITH SUPPLIER NAME
+-- =====================================================
+
+SELECT
+    p.prod_id,
+    p.prod_name,
+    p.category,
+    p.unit_price,
+    s.sup_name
+FROM product p
+JOIN supplier s
+ON p.sup_id = s.sup_id;
+
+
+-- =====================================================
+-- INVENTORY WITH PRODUCT AND WAREHOUSE
+-- =====================================================
+
+SELECT
+    i.inventory_id,
+    p.prod_name,
+    w.warehouse_name,
+    i.quantity_on_hand,
+    i.reorder_level
+FROM inventory i
+JOIN product p
+ON i.prod_id = p.prod_id
+JOIN warehouse w
+ON i.warehouse_id = w.warehouse_id;
+
+
+-- =====================================================
+-- PRODUCTS WHICH NEED RESTOCKING
+-- =====================================================
+
+SELECT
+    p.prod_name,
+    i.quantity_on_hand,
+    i.reorder_level
+FROM inventory i
+JOIN product p
+ON i.prod_id = p.prod_id
+WHERE i.quantity_on_hand <= i.reorder_level;
+
+
+-- =====================================================
+-- CUSTOMER SALES ORDERS
+-- =====================================================
+
+SELECT
+    c.cust_name,
+    s.so_id,
+    s.order_date,
+    s.total_amount,
+    s.status
+FROM customer c
+JOIN sales_order s
+ON c.cust_id = s.customer_id;
+
+
+-- =====================================================
+-- PURCHASE ORDERS WITH SUPPLIER
+-- =====================================================
+
+SELECT
+    p.po_id,
+    p.order_date,
+    p.total_amount,
+    p.status,
+    s.sup_name
+FROM purchase_order p
+JOIN supplier s
+ON p.supplier_id = s.sup_id;
+
+
+-- =====================================================
+-- CALCULATE ORDER ITEM TOTAL
+-- =====================================================
+
+SELECT
+    order_item_id,
+    product_id,
+    quantity,
+    unit_price,
+    quantity * unit_price AS item_total
+FROM order_item;
+
+
+-- =====================================================
+-- TOTAL SALES
+-- =====================================================
+
+SELECT
+    SUM(total_amount) AS total_sales
+FROM sales_order;
+
+
+-- =====================================================
+-- TOTAL PURCHASE AMOUNT
+-- =====================================================
+
+SELECT
+    SUM(total_amount) AS total_purchase
+FROM purchase_order;
+
+
+-- =====================================================
+-- NUMBER OF PRODUCTS IN EACH CATEGORY
+-- =====================================================
+
+SELECT
+    category,
+    COUNT(*) AS total_products
+FROM product
+GROUP BY category;
+
+
+-- =====================================================
+-- MOST EXPENSIVE PRODUCT
+-- =====================================================
+
+SELECT *
+FROM product
+ORDER BY unit_price DESC
+LIMIT 1;
+
+
+-- =====================================================
+-- PRODUCTS ABOVE 10000
+-- =====================================================
+
+SELECT
+    prod_name,
+    unit_price
+FROM product
+WHERE unit_price > 10000;
+
+
+-- =====================================================
+-- UPDATE INVENTORY
+-- Example: 10 laptops sold
+-- =====================================================
+
+UPDATE inventory
+SET quantity_on_hand = quantity_on_hand - 10,
+    last_updated = CURDATE()
+WHERE inventory_id = 1;
+
+
+-- =====================================================
+-- UPDATE SALES ORDER STATUS
+-- =====================================================
+
+UPDATE sales_order
+SET status = 'Delivered'
+WHERE so_id = 1;
+
+
+-- =====================================================
+-- FINAL CHECK
+-- =====================================================
+
+SELECT * FROM supplier;
+SELECT * FROM product;
+SELECT * FROM warehouse;
+SELECT * FROM inventory;
+SELECT * FROM customer;
+SELECT * FROM purchase_order;
+SELECT * FROM sales_order;
+SELECT * FROM order_item;
